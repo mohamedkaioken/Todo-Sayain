@@ -17,7 +17,18 @@
       </v-btn>
       </v-toolbar>
       <v-navigation-drawer app v-model="drawer" temporary class="lighten-3 green">
-          <p>Test</p>
+          <v-list>
+              <v-list-item v-for="link in links" :key="link.text"  :to="link.route">
+                  <v-list-item-action>
+                      <v-icon class="white--text " right large>{{link.icon}}</v-icon>
+                  </v-list-item-action>
+                  <v-list-item-content>
+                      <v-list-item-title class=" white--text title">
+                      {{link.text}}
+                  </v-list-item-title>
+                  </v-list-item-content>
+              </v-list-item>
+          </v-list>
       </v-navigation-drawer>
     </nav>
 </template>
@@ -27,6 +38,11 @@ export default {
   data () {
       return {
           drawer: false,
+          links: [
+              {icon:'filter_1', text: 'Dashboard', route:'/'},
+              {icon:'filter_2', text: 'Projects', route:'/projects'},
+              {icon:'filter_3', text: 'Teams', route:'/teams'},
+          ]
       }
   }
 }
