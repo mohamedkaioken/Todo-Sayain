@@ -2,6 +2,21 @@
   <div class="dash">
     <h1 class="text-center">Dashboard</h1>
     <v-container class="my-5">
+      <v-row class="mb-3">
+        <v-btn small text @click="sortBy('title')">
+          <v-icon left small>
+            folder
+          </v-icon>
+          <span class="caption text-lowercase">By project name</span>
+        </v-btn>
+        <v-btn small text @click="sortBy('person')">
+          <v-icon left small>
+            person
+          </v-icon>
+          <span class="caption text-lowercase">By Person name</span>
+        </v-btn>
+      </v-row>
+
       <v-card
         flat
         class="pa-2"
@@ -79,8 +94,13 @@ export default {
         }
       ]
     };
+  },
+    methods: {
+    sortBy(prop) {
+      this.projects.sort((a,b) => a[prop] < b[prop] ? -1 : 1)
+    }
   }
-};
+}
 </script>
 <style>
 .project.complete {
@@ -93,12 +113,12 @@ export default {
   border-left: 4px solid tomato;
 }
 .v-chip.complete {
-  background: #3cd1c2;
+  background: #3cd1c2 !important;
 }
 .v-chip.ongoing {
-  background: #ffaa2c;
+  background: #ffaa2c !important;
 }
 .v-chip.overdue {
-  background: #f83e70;
+  background: #f83e70 !important;
 }
 </style>
