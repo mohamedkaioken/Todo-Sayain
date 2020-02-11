@@ -60,36 +60,15 @@
                     </template>
                     <v-date-picker
                       v-model="due"
+                      disabled
+                      readonly
                       @change="menu1 = false"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
-
-                <v-col cols="12" lg="6">
-                  <v-menu
-                    v-model="menu2"
-                    :close-on-content-click="false"
-                    max-width="290"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
-                        :value="computedDateFormatted"
-                        clearable
-                        label="mm/dd/yy"
-                        readonly
-                        v-on="on"
-                        @click:clear="date = null"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="due"
-                      @change="menu2 = false"
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
               </v-row>
             </v-container>
-            <v-btn class="mr-4" @click="validate">submit</v-btn>
+            <v-btn class="mr-4" @click="validate" :loading="loading">submit</v-btn>
             <v-btn @click="reset">clear</v-btn>
           </v-form>
         </v-card-text>
@@ -121,12 +100,14 @@ export default {
     ],
     select: null,
     items: ["ongoing", "complete", "overdue"],
-    checkbox: false
+    checkbox: false,
+    loading:false,
   }),
 
   methods: {
     validate() {
       if (this.$refs.form.validate()) {
+          this.loading = true;
         const project = {
           title: this.title,
           content: this.content,
@@ -137,7 +118,8 @@ export default {
         db.collection("projects")
           .add(project)
           .then(() => {
-            console.log("Added to Database");
+            this.loading = false;
+            this.reset();
           });
       }
     },
