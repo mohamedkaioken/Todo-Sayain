@@ -40,35 +40,9 @@
                 outlined
               ></v-select>
             </v-col>
-            <v-container>
-              <v-row>
-                <v-col cols="12" lg="6">
-                  <v-menu
-                    v-model="menu1"
-                    :close-on-content-click="false"
-                    max-width="290"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-text-field
-                        :value="computedDateFormatted"
-                        clearable
-                        label="mm/dd/yy"
-                        readonly
-                        v-on="on"
-                        @click:clear="date = null"
-                      ></v-text-field>
-                    </template>
-                    <v-date-picker
-                      v-model="due"
-                      disabled
-                      readonly
-                      @change="menu1 = false"
-                    ></v-date-picker>
-                  </v-menu>
-                </v-col>
-              </v-row>
-            </v-container>
-            <v-btn class="mr-4" @click="validate" :loading="loading">submit</v-btn>
+            <v-btn class="mr-4" @click="validate" :loading="loading"
+              >submit</v-btn
+            >
             <v-btn @click="reset">clear</v-btn>
           </v-form>
         </v-card-text>
@@ -76,14 +50,19 @@
     </v-dialog>
   </div>
 </template>
-
+<script src="/__/firebase/7.8.0/firebase-app.js"></script>
+<script src="/__/firebase/7.8.0/firebase-firestore.js"></script>
 <script>
 import db from "@/fb";
-import format from "dateformat";
+import format from "date-fns/format";
+import firebase from 'firebase/app'
+import 'firebase/firestore'
 export default {
   name: "Popup",
   data: () => ({
-    date: new Date().toISOString().substr(0, 10),
+    // date: new Date(timestamp.seconds * 1000),
+    // timestamp = { seconds: 1549843200, nanoseconds: 0 },
+    due:null,
     menu1: false,
     menu2: false,
     dialog: false,
@@ -101,18 +80,19 @@ export default {
     select: null,
     items: ["ongoing", "complete", "overdue"],
     checkbox: false,
-    loading:false,
+    loading: false
   }),
 
   methods: {
     validate() {
       if (this.$refs.form.validate()) {
-          this.loading = true;
+        this.loading = true;
+        let date = new firebase.firestore.Timestamp.now;
         const project = {
           title: this.title,
           content: this.content,
-          due: format(this.due, "DD MM YYYY"),
           person: this.person,
+          due: date ,
           status: this.status
         };
         db.collection("projects")
@@ -121,6 +101,7 @@ export default {
             this.loading = false;
             this.reset();
           });
+
       }
     },
     reset() {
@@ -128,24 +109,8 @@ export default {
     },
     resetValidation() {
       this.$refs.form.resetValidation();
-    },
-    formatDate(date) {
-      if (!date) return null;
-
-      const [year, month, day] = date.split("-");
-      return `${month}/${day}/${year}`;
-    },
-    parseDate(date) {
-      if (!date) return null;
-
-      const [month, day, year] = date.split("/");
-      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     }
   },
-  computed: {
-    computedDateFormatted() {
-      return this.formatDate(this.date);
-    }
-  }
+  
 };
 </script>

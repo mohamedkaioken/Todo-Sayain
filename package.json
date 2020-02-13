@@ -8,7 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "canvasjs": "^1.8.3",
     "core-js": "^3.6.4",
+    "date-fns": "^2.9.0",
     "dateformat": "^3.0.3",
     "firebase": "^7.8.1",
     "vue": "^2.6.11",
