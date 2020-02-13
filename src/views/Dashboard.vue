@@ -15,6 +15,27 @@ import db from "@/fb";
 
 export default {
   name: "Dash",
+  mounted: async function() {
+    
+    db.collection("projects").onSnapshot(res => {
+      const changes = res.docChanges();
+      changes.forEach(change => {
+        if (change.type === "added") {
+          this.projects.push({
+            ...change.doc.data(),
+            id: change.doc.id
+          });
+        }
+        this.chartOptions.data[0].dataPoints = this.projects.map(p => ({
+            x: new Date(p.due.toDate().toDateString()),
+            y: p.yAxis
+          }));
+      });
+      this.render();
+    });
+    
+    console.log(this.chartOptions);
+  },
   data: () => ({
     projects: [],
     chartOptions: {
@@ -27,40 +48,23 @@ export default {
       axisY: {
         title: "Projects"
       },
+      animationEnabled: true,
       data: [
         {
-          type: "line",
-          name: "CPU Utilization",
-          connectNullData: true,
-          //nullDataLineDashType: "solid",
-          xValueType: "dateTime",
-          xValueFormatString: "DD MMM hh:mm TT",
-          yValueFormatString: '#,##0.##"%"',
+          type: "column",
+          yValueFormatString: "#,###",
           dataPoints: []
         }
       ]
     }
   }),
-  mounted: async function() {
-    db.collection("projects").onSnapshot(res => {
-      const changes = res.docChanges();
-      changes.forEach(change => {
-        if (change.type === "added") {
-          this.projects.push({
-            ...change.doc.data(),
-            id: change.doc.id
-          });
-        }
-      });
-      this.chartOptions.data[0].dataPoints = this.projects.map(p => ({
-        x: p.xAxis,
-        y: p.yAxis
-      }));
+  methods:{
+    render(){
       this.chart = new CanvasJS.Chart("chartContainer", this.chartOptions);
-      this.chart.render();
-    });
-    console.log(this.chartOptions);
+      this.chart.render()
+    }
   }
+  
 };
 </script>
 <style>
